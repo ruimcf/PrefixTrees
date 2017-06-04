@@ -36,4 +36,4 @@ if __name__ == "__main__":
     text = "Hello World"
     pattern = "l"
     computePiArray(pattern)
-    naive(text, pattern)
+    KMP(text, pattern)
