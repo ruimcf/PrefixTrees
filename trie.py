@@ -83,6 +83,32 @@ def printRecursive(cur_node, stack):
         printRecursive(child, stack)
     stack.pop()
 
+def insertRadix:
+    for letter in len(word):
+        tamanho = len(cur_node.children)
+        if tamanho == 0:
+            new_node = node(word[letter:])
+            cur_node.children.append(new_node)
+            cur_node = new_node
+            print("Inserted letter ",word[letter:])
+            return
+        else:
+            for i in range(tamanho):
+                if word[letter] == cur_node.children[i].char[0]:
+                    if len(cur_node.children[i].char) > 1:
+                        split_node = node(cur_node.children[i].char[1:])
+                        cur_node.children[i].char = cur_node.children[i].char[0]
+                        cur_node.children[i].children.append(split_node)
+                        print("Splited node")
+                    cur_node = cur_node.children[i]
+                    break
+                else:
+                    if i == tamanho-1:
+                        new_node = node(word[letter:])
+                        cur_node.children.append(new_node)
+                        print("Inserted letter ", word[letter:])
+                        return
+
 
 
 if __name__ == "__main__":
