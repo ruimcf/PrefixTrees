@@ -47,6 +47,26 @@ def insert(cur_node, word):
                         print("Inserted letter ",letter)
     print("Inserted word", word)
 
+def remove(cur_node, word):
+    removeRecursive(cur_node, word, 0)
+
+def removeRecursive(cur_node, word, i):
+    if i == len(word):
+        if(len(cur_node.children) == 0):
+            return 1
+        return 0
+    for j in range(len(cur_node.children)):
+        if cur_node.children[j].char == word[i]:
+            if(removeRecursive(cur_node.children[j], word, i+1)):
+                del cur_node.children[j]
+                if len(cur_node.children) == 0:
+                    return 1
+                else:
+                    return 0
+            else:
+                return 0
+    return 0
+
 
 def printTree(root_node):
     stack = []
@@ -77,3 +97,6 @@ if __name__ == "__main__":
         print(line)
         insertText(root, line)
     printTree(root)
+    remove(root, "gone")
+    printTree(root)
+
