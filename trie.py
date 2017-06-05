@@ -2,6 +2,7 @@ class node:
     def __init__(self, chr):
         self.char = chr
         self.children = []
+        self.endOfWord = False
 
 
 def find(node, pattern):
@@ -12,6 +13,13 @@ def find(node, pattern):
             return
         for i in range(tamanho):
             if letter == node.children[i].char:
+                if letter == pattern[-1]:
+                    if node.children[i].endOfWord:
+                        print("Found",pattern)
+                        return
+                    else:
+                        print("Not Found", pattern)
+                        return
                 node = node.children[i]
                 break
             else:
@@ -31,6 +39,8 @@ def insert(cur_node, word):
         tamanho = len(cur_node.children)
         if tamanho == 0:
             new_node = node(letter)
+            if(letter == word[-1]):
+                new_node.endOfWord = True
             cur_node.children.append(new_node)
             cur_node = new_node
             print("Inserted letter ",letter)
@@ -38,10 +48,14 @@ def insert(cur_node, word):
             for i in range(tamanho):
                 if letter == cur_node.children[i].char:
                     cur_node = cur_node.children[i]
+                    if(letter == word[-1]):
+                        cur_node.endOfWord = True
                     break
                 else:
                     if i == tamanho-1:
                         new_node = node(letter)
+                        if(letter == word[-1]):
+                            new_node.endOfWord = True
                         cur_node.children.append(new_node)
                         cur_node = new_node
                         print("Inserted letter ",letter)
@@ -54,12 +68,14 @@ def removeRecursive(cur_node, word, i):
     if i == len(word):
         if(len(cur_node.children) == 0):
             return 1
-        return 0
+        else:
+            cur_node.endOfWord = False
+            return 0
     for j in range(len(cur_node.children)):
         if cur_node.children[j].char == word[i]:
             if(removeRecursive(cur_node.children[j], word, i+1)):
                 del cur_node.children[j]
-                if len(cur_node.children) == 0:
+                if len(cur_node.children) == 0 and cur_node.endOfWord == False:
                     return 1
                 else:
                     return 0
@@ -79,43 +95,79 @@ def printRecursive(cur_node, stack):
         print("".join(stack))
         stack.pop()
         return
+    if(cur_node.endOfWord == True):
+        print("".join(stack))
     for child in cur_node.children:
         printRecursive(child, stack)
     stack.pop()
 
-def insertRadix:
-    for letter in len(word):
-        tamanho = len(cur_node.children)
-        if tamanho == 0:
-            new_node = node(word[letter:])
-            cur_node.children.append(new_node)
-            cur_node = new_node
-            print("Inserted letter ",word[letter:])
-            return
-        else:
-            for i in range(tamanho):
-                if word[letter] == cur_node.children[i].char[0]:
-                    if len(cur_node.children[i].char) > 1:
-                        split_node = node(cur_node.children[i].char[1:])
-                        cur_node.children[i].char = cur_node.children[i].char[0]
-                        cur_node.children[i].children.append(split_node)
-                        print("Splited node")
-                    cur_node = cur_node.children[i]
-                    break
+
+
+
+def insertRadix(cur_node, word):
+    insertRadixRecursive(cur_node, word, 0)
+
+def insertRadixRecursive(cur_node, word, letter):
+    tamanho = len(cur_node.children)
+    if tamanho == 0:
+        new_node = node(word[letter:])
+        new_node.endOfWord = True
+        cur_node.children.append(new_node)
+        print("Inserted letter ",word[letter:])
+        return
+    for j in range(tamanho):
+        child = cur_node.children[j]
+        if child.char[0] == word[letter]:
+            if(len(child.char) == 1):
+                if(letter == len(word)-1):
+                    child.endOfWord = True
                 else:
-                    if i == tamanho-1:
-                        new_node = node(word[letter:])
-                        cur_node.children.append(new_node)
-                        print("Inserted letter ", word[letter:])
+                    insertRadixRecursive(child, word, letter+1)
+                return
+            else:
+                for k in range(len(child.char)):
+                    if child.char[k] == word[letter+k]:
+                        if word[letter+k] == word[-1]:
+                            if k == len(child.char)-1:
+                                child.endOfWord = True
+                                return
+                            else:
+                                split_node = node(child.char[k+1:])
+                                child.char = child.char[:k+1]
+                                split_node.children = child.children
+                                split_node.endOfWord = child.endOfWord
+                                child.endOfWord = True
+                                child.children = []
+                                child.children.append(split_node)
+                                print("Splited node")
+                                return
+                    else:
+                        split_node = node(child.char[k:])
+                        child.char = child.char[:k+1]
+                        split_node.children = child.children
+                        split_node.endOfWord = child.endOfWord
+                        child.endOfWord = False
+                        child.children = []
+                        child.children.append(split_node)
+                        new_node = node(word[letter+k:])
+                        new_node.endOfWord = True
+                        child.children.append(new_node)
+                        print("Splited node")
                         return
+                insertRadixRecursive(child, word, letter+k)
+                return
+
+
 
 
 
 if __name__ == "__main__":
     root = node('')
+    insert(root, "go")
     insert(root, "gone")
     find(root, "go")
     find(root, "gonewild")
+    find(root, "gon")
     fd = open("inputText.txt","r")
     lines = fd.readlines()
     print(lines[0])
