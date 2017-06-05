@@ -35,11 +35,13 @@ def insertText(cur_node, text):
         insert(cur_node, token)
 
 def insert(cur_node, word):
+    k = 0
     for letter in word:
+        k = k+1
         tamanho = len(cur_node.children)
         if tamanho == 0:
             new_node = node(letter)
-            if(letter == word[-1]):
+            if(k == len(word)):
                 new_node.endOfWord = True
             cur_node.children.append(new_node)
             cur_node = new_node
@@ -48,13 +50,13 @@ def insert(cur_node, word):
             for i in range(tamanho):
                 if letter == cur_node.children[i].char:
                     cur_node = cur_node.children[i]
-                    if(letter == word[-1]):
+                    if(k == len(word)):
                         cur_node.endOfWord = True
                     break
                 else:
                     if i == tamanho-1:
                         new_node = node(letter)
-                        if(letter == word[-1]):
+                        if(k == len(word)):
                             new_node.endOfWord = True
                         cur_node.children.append(new_node)
                         cur_node = new_node
@@ -85,6 +87,7 @@ def removeRecursive(cur_node, word, i):
 
 
 def printTree(root_node):
+    print("####TREE####")
     stack = []
     for child in root_node.children:
         printRecursive(child, stack)
@@ -101,6 +104,11 @@ def printRecursive(cur_node, stack):
         printRecursive(child, stack)
     stack.pop()
 
+def printTreeNodes(cur_node):
+    print(cur_node.char)
+    for child in cur_node.children:
+        printTreeNodes(child)
+
 
 
 
@@ -113,7 +121,6 @@ def insertRadixRecursive(cur_node, word, letter):
         new_node = node(word[letter:])
         new_node.endOfWord = True
         cur_node.children.append(new_node)
-        print("Inserted letter ",word[letter:])
         return
     for j in range(tamanho):
         child = cur_node.children[j]
@@ -127,7 +134,7 @@ def insertRadixRecursive(cur_node, word, letter):
             else:
                 for k in range(len(child.char)):
                     if child.char[k] == word[letter+k]:
-                        if word[letter+k] == word[-1]:
+                        if letter+k == len(word)-1:
                             if k == len(child.char)-1:
                                 child.endOfWord = True
                                 return
@@ -136,10 +143,9 @@ def insertRadixRecursive(cur_node, word, letter):
                                 child.char = child.char[:k+1]
                                 split_node.children = child.children
                                 split_node.endOfWord = child.endOfWord
-                                child.endOfWord = True
+                                child.endOfWord = False
                                 child.children = []
                                 child.children.append(split_node)
-                                print("Splited node")
                                 return
                     else:
                         split_node = node(child.char[k:])
@@ -152,7 +158,6 @@ def insertRadixRecursive(cur_node, word, letter):
                         new_node = node(word[letter+k:])
                         new_node.endOfWord = True
                         child.children.append(new_node)
-                        print("Splited node")
                         return
                 insertRadixRecursive(child, word, letter+k)
                 return
@@ -163,18 +168,11 @@ def insertRadixRecursive(cur_node, word, letter):
 
 if __name__ == "__main__":
     root = node('')
-    insert(root, "go")
-    insert(root, "gone")
-    find(root, "go")
-    find(root, "gonewild")
-    find(root, "gon")
     fd = open("inputText.txt","r")
-    lines = fd.readlines()
-    print(lines[0])
-    for line in lines[0:2]:
-        print(line)
-        insertText(root, line)
-    printTree(root)
-    remove(root, "gone")
-    printTree(root)
+    for line in range(5):
+        word = fd.readline().rstrip()
+        print("Inserting Word",word)
+        insertText(root, word)
+        printTree(root)
+    #  printTreeNodes(root)
 
