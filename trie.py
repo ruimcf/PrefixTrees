@@ -139,8 +139,8 @@ def insertRadixRecursive(cur_node, word, letter):
                                 child.endOfWord = True
                                 return
                             else:
-                                split_node = node(child.char[k:])
-                                child.char = child.char[:k]
+                                split_node = node(child.char[k+1:])
+                                child.char = child.char[:k+1]
                                 split_node.children = child.children
                                 split_node.endOfWord = child.endOfWord
                                 child.endOfWord = False
@@ -166,19 +166,21 @@ def insertRadixRecursive(cur_node, word, letter):
     cur_node.children.append(new_node)
     return
 
+def insertSuffixTree(root, word):
+    for i in range(len(word)):
+        insertRadix(root, word[i:])
 
 
 
 
 if __name__ == "__main__":
     root = node('')
-    fd = open("words.txt","r")
-    for line in range(400000):
+    fd = open("inputText.txt","r")
+    for line in range(5):
         word = fd.readline().rstrip()
         if word != '':
             print("Inserting Word",word)
-            insertRadix(root, word)
-        #printTree(root)
+            insertSuffixTree(root, word)
     printTreeNodes(root)
     printTree(root)
 
